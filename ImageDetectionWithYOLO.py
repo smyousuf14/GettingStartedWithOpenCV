@@ -26,7 +26,7 @@ print("[INFO] loading YOLO from disk...")
 net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 
 # Load our input image and grab its spatial dimentions
-image = cv2.imread("images/soccer.jpg")
+image = cv2.imread("images/94.jpg")
 (H, W) = image.shape[:2]
 
 # determine only the output layer names that we need from YOLO
@@ -35,7 +35,7 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # construct a blob from the input image and then perform a forward
 # pass of the YOLO object detector , giving us our bounding boxes and associated probabilities
-blob = cv2.dnn.blobFromImage(image, 1/255, (416,416), swapRB = True, crop = False)
+blob = cv2.dnn.blobFromImage(image, 1 / 255.0 , (416,416), swapRB = True, crop = False)
 net.setInput(blob)
 start = time.time()
 layerOutputs = net.forward(ln)
@@ -60,7 +60,7 @@ for output in layerOutputs:
         confidence = scores[classID]
 
         #filer out the weak predictions by ensuring the detected probability is greater than the minimum probability
-        if confidence > 80:
+        if confidence > 0.80:
 
             # scale the bounding box coordinates back relative to the
             # size of the image, keeping in mind that YOLO actually
@@ -92,7 +92,7 @@ if len(idxs) > 0:
         #draw a bounding box rectangle and label on the image.
         color = [int(c) for c in COLORS[classIDs[i]]]
         cv2.rectangle(image, (x,y), (x + w, y + h), color, 2)
-        text = "{}: {:.4f".format(LABELS[classIDs[i],confidences[i]])
+        text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
         cv2.putText(image, text, (x,y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 #show the output image
